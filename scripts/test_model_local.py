@@ -35,12 +35,12 @@ with detection_graph.as_default():
     detection_scores = detection_graph.get_tensor_by_name('detection_scores:0')
     detection_classes = detection_graph.get_tensor_by_name('detection_classes:0')
     num_detections = detection_graph.get_tensor_by_name('num_detections:0')
-        
+
     for image_path in TEST_IMAGE_PATHS:
       image_np = cv2.imread(image_path)
       img_height = image_np.shape[0]
       img_width = image_np.shape[1]
-      
+
       image_np_expanded = np.expand_dims(image_np, axis=0)
 
       # Actual detection.
@@ -49,7 +49,7 @@ with detection_graph.as_default():
           feed_dict={image_tensor: image_np_expanded})
 
       final_result = Config.bbox_result(img_width, img_height, np.squeeze(boxes), np.squeeze(classes).astype(np.int32), np.squeeze(scores), category_index, use_normalized_coordinates=True)
-      
+
       for result in final_result:
         class_name = result[0]
         confidence = result[1]
@@ -61,6 +61,6 @@ with detection_graph.as_default():
         _text = class_name + "_" + str(confidence)
         cv2.rectangle(image_np, (x_min, y_min), (x_max, y_max), (0,0,255), 8)
         cv2.putText(image_np, _text, (x_min, y_min), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
-      
+
       cv2.imshow("object_detection", image_np)
       cv2.waitKey(0)
