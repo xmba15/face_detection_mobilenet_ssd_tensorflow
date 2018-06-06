@@ -11,8 +11,8 @@ class Config:
 
     model_dir = model_path
     image_dir = image_path
-    face_model = "frozen_inference_graph_face.pb"
-    face_label = "face_label.pbtxt"
+    face_model = "frozen_inference_graph.pb"
+    face_label = "labels.pbtxt"
 
     @classmethod
     def get_usb_cam(cls):
