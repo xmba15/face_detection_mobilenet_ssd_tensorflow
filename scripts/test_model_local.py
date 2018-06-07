@@ -5,7 +5,6 @@ import numpy as np
 import os
 import sys
 import tensorflow as tf
-from io import StringIO
 import cv2
 
 from config import Config
@@ -25,7 +24,8 @@ with detection_graph.as_default():
     od_graph_def.ParseFromString(serialized_graph)
     tf.import_graph_def(od_graph_def, name='')
 
-TEST_IMAGE_PATHS = [os.path.join(Config.image_dir, "ss.jpg")]
+# TEST_IMAGE_PATHS = [os.path.join(Config.image_dir, "ss.jpg")]
+TEST_IMAGE_PATHS = [os.path.join(Config.image_dir, "temp.jpg")]
 
 # print TEST_IMAGE_PATHS
 with detection_graph.as_default():
@@ -48,7 +48,7 @@ with detection_graph.as_default():
           [detection_boxes, detection_scores, detection_classes, num_detections],
           feed_dict={image_tensor: image_np_expanded})
 
-      final_result = Config.bbox_result(img_width, img_height, np.squeeze(boxes), np.squeeze(classes).astype(np.int32), np.squeeze(scores), category_index, use_normalized_coordinates=True)
+      final_result = Config.bbox_result(img_width, img_height, np.squeeze(boxes), np.squeeze(classes).astype(np.int32), np.squeeze(scores), category_index, use_normalized_coordinates=True, min_score_thresh = .7)
 
       for result in final_result:
         class_name = result[0]
@@ -59,8 +59,9 @@ with detection_graph.as_default():
         y_max = int(result[5])
         print result
         _text = class_name + "_" + str(confidence)
-        cv2.rectangle(image_np, (x_min, y_min), (x_max, y_max), (0,0,255), 8)
-        cv2.putText(image_np, _text, (x_min, y_min), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
+        if class_name == "person":
+          cv2.rectangle(image_np, (x_min, y_min), (x_max, y_max), (0,0,255), 8)
+          cv2.putText(image_np, _text, (x_min, y_min), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255), 2)
 
       cv2.imshow("object_detection", image_np)
       cv2.waitKey(0)
